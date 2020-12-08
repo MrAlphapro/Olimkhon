@@ -1,5 +1,7 @@
 package tj.ilmhona.olimhon;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,18 +10,23 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
 
-    private Contact[] localContacts;
-    private OnItemClickListener localListener;
 
-    public ContactAdapter(Contact[] contacts, OnItemClickListener listener) {
-        localContacts = new Contact[contacts.length];
-        localListener = listener;
+    private List<Contact> mList;
+    private Context mContext;
 
-        for(int i=0; i<contacts.length; i++) {
-            localContacts[i] = contacts[i];
-        }
+    public ContactAdapter(MainActivity mContext) {
+        this.mContext = mContext;
+    }
+
+
+
+    public void setData (List<Contact> list){
+        this.mList = list;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -31,17 +38,40 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
 
     @Override
-    public void onBindViewHolder(ContactViewHolder holder,int position) {
-        holder.textView.setText(localContacts[position].getName());
-        holder.imageView.setImageResource(localContacts[position].getImage());
+    public void onBindViewHolder(ContactViewHolder holder,int position)
+    {
+
+        Contact contact = mList.get(position);
+        if (contact == null){
+            return;
+        }
+
+        holder.imageView.setImageResource(contact.getImage());
+        holder.textView.setText(contact.getName());
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext,InfoActivity.class);
+                intent.putExtra("image",mList.get(position).getImage());
+                intent.putExtra("data",mList.get(position).getName());
+                mContext.startActivity(intent);
+            }
+        });
+
+
     }
 
     @Override
     public int getItemCount() {
-        return localContacts.length;
+        if (mList != null) {
+            return mList.size();
+        }
+        return 0;
     }
 
-    class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
+    public class ContactViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView imageView;
 
@@ -50,16 +80,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             textView = itemView.findViewById(R.id.textView);
             imageView = itemView.findViewById(R.id.profileImage);
 
-            itemView.setOnClickListener(this);
+
+
         }
 
-        @Override
-        public void onClick(View view) {
-            localListener.onItemClick(getAdapterPosition());
-        }
+
     }
 
-    interface OnItemClickListener {
-        void onItemClick(int position);
-    }
+
 }

@@ -26,8 +26,16 @@ public class InfoActivity extends AppCompatActivity {
         textView = findViewById(R.id.textviewId);
         imageView = findViewById(R.id.imgviewID);
 
-        textView.setText(MainActivity.name[MainActivity.a]);
-        imageView.setImageResource(MainActivity.image[MainActivity.a]);
+        String tv = getIntent().getStringExtra("data");
+
+        int image = getIntent().getIntExtra("image",0);
+
+
+        textView.setText(tv);
+        imageView.setImageResource(image);
+
+
+
 
     }
 }
